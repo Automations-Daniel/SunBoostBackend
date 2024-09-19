@@ -1,0 +1,6 @@
+# Ignored files and folders
+.env
+.venv/
+__pycache__/
+.vercel
+key.json

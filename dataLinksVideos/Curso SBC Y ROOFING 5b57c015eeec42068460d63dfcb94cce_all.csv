@@ -1,0 +1,19 @@
+﻿Mes,ID,Público,Nombre,Workflow,Link,Desempeño,Publicado
+2,CC01-1,Miami,AD 1 Curso,Enviado a MB,https://drive.google.com/file/d/1esgIOi15NlYfWNeewQXY6pWsw_C4Lgkg/view?usp=sharing,Trajo Citas,Yes
+2,CC01-2,Miami,AD 2 Curso,Enviado a MB,https://drive.google.com/file/d/17kQ7ueP2UsKCqUpss5H9FaRY9cp1IUh7/view?usp=sharing,Trajo Citas,Yes
+2,CC01-3,Miami,AD 3 Curso,Enviado a MB,https://drive.google.com/file/d/1mysqhVcBVrg6roeWP-sYST7TEseEBYkp/view?usp=sharing,No funcionó,Yes
+2,CC01-4,Miami,AD 4 Curso,Enviado a MB,https://drive.google.com/file/d/1FtjiyLwtux4yV8B5E-n82sOQXSXoarP0/view?usp=sharing,No funcionó,Yes
+2,CC01-5,Miami,AD 5 Curso (corto),Enviado a MB,https://drive.google.com/file/d/112aWmb8wfiqf14_1NgtVmOQgl4ZjHXXC/view?usp=sharing,No funcionó,Yes
+2,CC01-6,Miami,AD 6 (basado en AD1),Enviado a MB,https://drive.google.com/drive/folders/1LBU-0GclyphuLtbqrP9byuh9RzlkjCqT?usp=sharing,Trajo Cierres,Yes
+3,CC01-6.2,Miami,VAR2 AD 6 (basado en AD1,Enviado a MB,https://drive.google.com/file/d/1yD2HN1IydfytFlYGwqaMNg2500xg4OPM/view?usp=sharing,Trajo Leads,No
+3,CC01-7,Miami,Imagen Collage AdsAcademy,Enviado a MB,https://drive.google.com/file/d/1VoVAndrS5iQJCt7FxQgDG1hgJPEGpB-h/view?usp=sharing,,No
+3,PA03-01,Miami,BLUR 1.2,Enviado a MB,https://drive.google.com/file/d/1pywOh51_Doa4lX6dKiLRQHKxXHDiVhe5/view?usp=sharing,,No
+3,PA03-02,Miami,BLUR 1.3,Enviado a MB,https://drive.google.com/file/d/1eghNC_ixDvUwjzuhXkOPYLAUfzCmcJc1/view?usp=sharing,,No
+3,PA03-03,Miami,BLUR 4.2,Enviado a MB,https://drive.google.com/file/d/1j6gC04u3XIplL_-n5zTmWgBA0JZ0kXhY/view?usp=sharing,,No
+8,RF08-1,California,Roofing CA 01,Enviado a MB,https://drive.google.com/file/d/1SYl_LlLGZVMf4LmZ7SCR9WoVeEKhjz8N/view?usp=drive_link,,No
+8,RF08-2E,California,Roofing CA 02,Enviado a MB,https://drive.google.com/file/d/1Ui9k6vGWZ4RIpSsSoCtTqr5mzLi1Bjix/view?usp=drive_link,,No
+8,RF08-3,,,,,,No
+8,RF08-4,,,,,,No
+8,RF08-5,,,,,,No
+8,RF08-6,,,,,,No
+8,RF08-7,,,,,,No

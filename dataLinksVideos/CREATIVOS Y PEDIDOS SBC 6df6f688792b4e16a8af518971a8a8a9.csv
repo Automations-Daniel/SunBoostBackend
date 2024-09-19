@@ -1,0 +1,13 @@
+﻿Mes,ID,Público,Nombre,Workflow,Link,Desempeño,Entregado
+2,CSB2-1,USA,Pedido Jesus,Entregado,,,No
+2,CSB2-2,USA,SBC clientes solares 1,Entregado,,,No
+2,CSB2-3,USA,SBC clientes solares 2,Entregado,,,No
+4,CSB4-1,USA,Imagen Aniversario SBC,Entregado,Enviado por SLACK,,No
+4,CSB4-2,Miami,Audio Alibeth Cita HVAC Miami,Entregado,Enviado por SLACK,,No
+4,CSB4-3,Texas,Script Orius Grabacion,Entregado,https://sunboostcrm.slack.com/archives/C06PL2CB30T/p1714071605631009?thread_ts=1713973710.926449&cid=C06PL2CB30T,,No
+7,VLT07-1,Florida,Creativos Volt Solar/Hvac,Entregado,https://drive.google.com/drive/folders/1A8bxUj8yQ60Cauzj8JHeFhOnfJyWLhrW?usp=drive_link,,Yes
+7,CSB7-1,Florida,Tarjeta Email Social Media 1,Entregado,Enviado Via Slack,,Yes
+7,CSB7-2,Florida,Tarjeta Email Assistant Executive,Entregado,Enviado Via Slack,,Yes
+7,,Florida,Tarjeta Email Social Media 2,Entregado,Enviado Via Slack,,Yes
+7,,Florida,Tarjeta Email Social Media 3,Entregado,Enviado Via Slack,,Yes
+8,PSB8-1E,USA,Alejandro Magno - Camilo,Entregado,,,No
