@@ -80,7 +80,7 @@ def load_video_links():
 
 def preprocess_data(df):
     """
-    Realiza la normalización de UTM Content, Stage, extrae el Video ID, la Leyenda, 
+    Realiza la normalización de UTM Content, Stage, extrae el Video ID, la Leyenda,
     y añade el enlace del vídeo si existe en los datos cargados desde la carpeta.
     """
     df = df.copy()
@@ -123,7 +123,9 @@ def preprocess_data(df):
     df["Link"] = df["Video ID"].map(video_links)
 
     # Reemplazar NaN o valores nulos en los links con "Sin enlace"
-    df["Link"] = df["Link"].fillna("Sin enlace")  # Usar fillna para reemplazar nulos directamente
+    df["Link"] = df["Link"].fillna(
+        "Sin enlace"
+    )  # Usar fillna para reemplazar nulos directamente
 
     return df
 
@@ -148,7 +150,9 @@ def analyze_closed_data(df, stages_to_analyze=["CLOSED", "INSTALLED"]):
     )
 
     # Unir los leads y cierres en un solo DataFrame
-    analysis_df = pd.merge(leads, cierres, on=["Video ID", "Leyenda", "Link"], how="left")
+    analysis_df = pd.merge(
+        leads, cierres, on=["Video ID", "Leyenda", "Link"], how="left"
+    )
     analysis_df["Cierres"] = analysis_df["Cierres"].fillna(0)
 
     # Calcular ratios y tasas de cierre
