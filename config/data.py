@@ -2,7 +2,9 @@ from google.oauth2.credentials import Credentials
 from googleapiclient.discovery import build
 from google.oauth2 import service_account
 import pandas as pd
+import numpy as np
 import re
+import os
 
 SCOPES = ["https://www.googleapis.com/auth/spreadsheets"]
 KEY = "key.json"
@@ -49,11 +51,37 @@ def get_sheet_names():
     return sheet_names
 
 
+def load_video_links():
+    """
+    Carga los enlaces de video desde la carpeta 'dataLinksVideos', procesando todos los archivos CSV dentro de esta carpeta.
+    """
+    folder_path = "dataLinksVideos"  # Asegúrate de que esta ruta es correcta
+    video_links = {}
+
+    # Iterar sobre todos los archivos CSV en la carpeta
+    for file_name in os.listdir(folder_path):
+        if file_name.endswith(".csv"):
+            file_path = os.path.join(folder_path, file_name)
+            df = pd.read_csv(file_path)
+
+            # Recorrer cada fila del DataFrame y obtener el ID del video y su enlace
+            for _, row in df.iterrows():
+                # Convertir el valor de ID a string antes de aplicar strip()
+                video_id = str(row.get("ID", "")).strip()  # Convertir a string
+                # Convertir el valor de Link a string antes de aplicar strip()
+                link = str(row.get("Link", "")).strip()  # Convertir a string
+
+                # Guardar el enlace si el ID no es vacío
+                if video_id:
+                    video_links[video_id] = link
+    print(video_links)
+    return video_links
+
+
 def preprocess_data(df):
     """
-    Realiza la normalización de UTM Content, Stage, extrae el Video ID y la Leyenda.
-    Si el UTM Content está vacío, asigna "Sin Matricula" como Video ID.
-    La leyenda es el contenido después de la matrícula, siempre y cuando no comience con un número.
+    Realiza la normalización de UTM Content, Stage, extrae el Video ID, la Leyenda, 
+    y añade el enlace del vídeo si existe en los datos cargados desde la carpeta.
     """
     df = df.copy()
 
@@ -61,7 +89,7 @@ def preprocess_data(df):
     df["UTM Content"] = df["UTM Content"].str.upper().str.strip()
     df["Stage"] = df["Stage"].str.upper().str.strip()
 
-    # Normalizacion del campo Video Id
+    # Normalización del campo Video Id
     df["Video ID"] = df["UTM Content"].apply(
         lambda x: (
             "Sin Matricula"
@@ -88,6 +116,15 @@ def preprocess_data(df):
         )
     )
 
+    # Cargar los links
+    video_links = load_video_links()
+
+    # Asignar links basados en el Video ID
+    df["Link"] = df["Video ID"].map(video_links)
+
+    # Reemplazar NaN o valores nulos en los links con "Sin enlace"
+    df["Link"] = df["Link"].fillna("Sin enlace")  # Usar fillna para reemplazar nulos directamente
+
     return df
 
 
@@ -100,18 +137,18 @@ def analyze_closed_data(df, stages_to_analyze=["CLOSED", "INSTALLED"]):
     df = df.copy()
 
     # Contar los leads
-    leads = df.groupby(["Video ID", "Leyenda"]).size().reset_index(name="Leads")
+    leads = df.groupby(["Video ID", "Leyenda", "Link"]).size().reset_index(name="Leads")
 
     # Filtrar y contar los cierres según los stages especificados
     cierres = (
         df[df["Stage"].isin(stages_to_analyze)]
-        .groupby(["Video ID", "Leyenda"])
+        .groupby(["Video ID", "Leyenda", "Link"])
         .size()
         .reset_index(name="Cierres")
     )
 
     # Unir los leads y cierres en un solo DataFrame
-    analysis_df = pd.merge(leads, cierres, on=["Video ID", "Leyenda"], how="left")
+    analysis_df = pd.merge(leads, cierres, on=["Video ID", "Leyenda", "Link"], how="left")
     analysis_df["Cierres"] = analysis_df["Cierres"].fillna(0)
 
     # Calcular ratios y tasas de cierre
@@ -155,18 +192,18 @@ def analyze_appointments_data(
     df = df.copy()
 
     # Contar los leads
-    leads = df.groupby(["Video ID", "Leyenda"]).size().reset_index(name="Leads")
+    leads = df.groupby(["Video ID", "Leyenda", "Link"]).size().reset_index(name="Leads")
 
     # Filtrar y contar las citas según los stages especificados
     citas = (
         df[df["Stage"].isin(stages_to_analyze)]
-        .groupby(["Video ID", "Leyenda"])
+        .groupby(["Video ID", "Leyenda", "Link"])
         .size()
         .reset_index(name="Citas")
     )
 
     # Unir los leads y citas en un solo DataFrame
-    analysis_df = pd.merge(leads, citas, on=["Video ID", "Leyenda"], how="left")
+    analysis_df = pd.merge(leads, citas, on=["Video ID", "Leyenda", "Link"], how="left")
     analysis_df["Citas"] = analysis_df["Citas"].fillna(0)
 
     # Calcular ratios y tasas de citas
@@ -216,7 +253,7 @@ def analyze_quality_distribution(df, video_id):
 def analyze_general_video_performance():
     """
     Analiza los datos generales de todos los clientes y devuelve los leads totales, citas totales y cierres totales de cada vídeo,
-    junto con la Leyenda correspondiente.
+    junto con la Leyenda y el enlace correspondiente.
     Los resultados se organizan de mayor a menor por leads totales.
     """
     clients = get_sheet_names()
@@ -231,8 +268,8 @@ def analyze_general_video_performance():
             # Unir los leads, cierres y citas en un solo DataFrame por cliente
             combined_df = pd.merge(
                 appointments_df,
-                closed_df[["Video ID", "Leyenda", "Cierres"]],
-                on=["Video ID", "Leyenda"],
+                closed_df[["Video ID", "Leyenda", "Link", "Cierres"]],
+                on=["Video ID", "Leyenda", "Link"],
                 how="left",
             )
             combined_df["Cierres"] = combined_df["Cierres"].fillna(0)
@@ -241,7 +278,7 @@ def analyze_general_video_performance():
 
     # Agrupar los resultados por Video ID y Leyenda
     grouped_df = (
-        final_df.groupby(["Video ID", "Leyenda"])
+        final_df.groupby(["Video ID", "Leyenda", "Link"])
         .agg(
             Leads_Totales=pd.NamedAgg(column="Leads", aggfunc="sum"),
             Citas_Totales=pd.NamedAgg(column="Citas", aggfunc="sum"),
