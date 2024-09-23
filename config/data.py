@@ -74,7 +74,6 @@ def load_video_links():
                 # Guardar el enlace si el ID no es vacío
                 if video_id:
                     video_links[video_id] = link
-    print(video_links)
     return video_links
 
 
