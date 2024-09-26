@@ -14,7 +14,14 @@ SPREADSHEET_ID = "1edfM96ge_NasWsH16WpGihBeCj0g-Rj2T6zmxZMycp4"
 
 def get_google_sheets_data(range_name: str):
     """
-    Obtiene los datos de un rango específico de una hoja de cálculo de Google Sheets
+    Fetches data from a specific range in a Google Sheets spreadsheet.
+
+    Args:
+        range_name (str): The range within the Google Sheets to retrieve data from.
+
+    Returns:
+        pd.DataFrame: A pandas DataFrame containing the data from the specified range.
+                      Returns an empty DataFrame if no data is found.
     """
     creds = service_account.Credentials.from_service_account_file(KEY, scopes=SCOPES)
     service = build("sheets", "v4", credentials=creds)
@@ -35,7 +42,10 @@ def get_google_sheets_data(range_name: str):
 
 def get_sheet_names():
     """
-    Obtiene los nombres de todas las hojas visibles en una hoja de cálculo de Google Sheets, en este caso cada cliente
+    Retrieves the names of all visible sheets (tabs) within a Google Sheets document.
+
+    Returns:
+        list: A list of strings, each representing a visible sheet name (typically clients).
     """
     creds = service_account.Credentials.from_service_account_file(KEY, scopes=SCOPES)
     service = build("sheets", "v4", credentials=creds)
@@ -53,7 +63,10 @@ def get_sheet_names():
 
 def load_video_links():
     """
-    Carga los enlaces de video desde la carpeta 'dataLinksVideos', procesando todos los archivos CSV dentro de esta carpeta.
+    Loads video links from CSV files located in the 'dataLinksVideos' folder.
+
+    Returns:
+        dict: A dictionary where the keys are video IDs and the values are the corresponding video links.
     """
     folder_path = "dataLinksVideos"  # Asegúrate de que esta ruta es correcta
     video_links = {}
@@ -79,8 +92,15 @@ def load_video_links():
 
 def preprocess_data(df):
     """
-    Realiza la normalización de UTM Content, Stage, extrae el Video ID, la Leyenda,
-    y añade el enlace del vídeo si existe en los datos cargados desde la carpeta.
+    Normalizes UTM Content, Stage, extracts Video ID and Leyenda from the UTM Content, 
+    and adds video links from the loaded data.
+
+    Args:
+        df (pd.DataFrame): A pandas DataFrame with UTM Content and Stage data.
+
+    Returns:
+        pd.DataFrame: A DataFrame with normalized UTM Content, extracted Video ID, 
+                      Leyenda, and the corresponding video links.
     """
     df = df.copy()
 
@@ -131,8 +151,14 @@ def preprocess_data(df):
 
 def analyze_closed_data(df, stages_to_analyze=["CLOSED", "INSTALLED"]):
     """
-    Analiza los datos de cierres, permitiendo especificar los stages a analizar.
-    Si no hay UTM Content, registra como 'Sin matrícula'.
+    Analyzes closure data, counting leads and closures based on the specified stages.
+
+    Args:
+        df (pd.DataFrame): A DataFrame containing UTM Content and Stage data.
+        stages_to_analyze (list): A list of stages to analyze for closures (default is ["CLOSED", "INSTALLED"]).
+
+    Returns:
+        pd.DataFrame: A DataFrame containing leads, closures, and calculated closure rates and ratios.
     """
     df = preprocess_data(df)
     df = df.copy()
@@ -188,8 +214,14 @@ def analyze_appointments_data(
     ],
 ):
     """
-    Analiza los datos de citas, permitiendo especificar los stages a analizar.
-    Si no hay UTM Content, registra como 'Sin matrícula'.
+    Analyzes appointment data, counting leads and appointments based on the specified stages.
+
+    Args:
+        df (pd.DataFrame): A DataFrame containing UTM Content and Stage data.
+        stages_to_analyze (list): A list of stages to analyze for appointments (default is a variety of stages).
+
+    Returns:
+        pd.DataFrame: A DataFrame containing leads, appointments, and calculated appointment rates and ratios.
     """
     df = preprocess_data(df)
     df = df.copy()
@@ -230,7 +262,14 @@ def analyze_appointments_data(
 
 def analyze_quality_distribution(df, video_id):
     """
-    Analiza la distribución de calidad por Stage para un video específico.
+    Analyzes the quality distribution by Stage for a specific video.
+
+    Args:
+        df (pd.DataFrame): A DataFrame containing UTM Content, Stage, and Video ID data.
+        video_id (str): The specific Video ID to analyze.
+
+    Returns:
+        pd.DataFrame: A DataFrame showing the number of leads per stage and their percentage for the specified video.
     """
     df = preprocess_data(df)
 
@@ -255,9 +294,11 @@ def analyze_quality_distribution(df, video_id):
 
 def analyze_general_video_performance():
     """
-    Analiza los datos generales de todos los clientes y devuelve los leads totales, citas totales y cierres totales de cada vídeo,
-    junto con la Leyenda y el enlace correspondiente.
-    Los resultados se organizan de mayor a menor por leads totales.
+    Analyzes general video performance across all clients, returning the total leads, appointments, and closures for each video.
+
+    Returns:
+        pd.DataFrame: A DataFrame containing video IDs, corresponding leads, appointments, closures, and links, 
+                      sorted by total leads in descending order.
     """
     clients = get_sheet_names()
     final_df = pd.DataFrame()
