@@ -84,18 +84,28 @@ def appointments_videos_client(
 
 
 @router.get("/quality/{client_name}")
-def analyze_quality(client_name: str, nomenclatura: str):
+def analyze_quality(
+    client_name: str, nomenclatura: str, start_date: str = None, end_date: str = None
+):
     """
-    Analiza la calidad de los leads por etapa para un video específico del cliente.
+    Analiza la calidad de los leads por etapa para un video específico del cliente, con un filtro opcional de fechas.
 
     Args:
         client_name (str): El nombre del cliente cuyos datos se desean analizar.
         nomenclatura (str): El identificador del video a analizar.
+        start_date (str, opcional): Fecha de inicio del filtro (formato YYYY-MM-DD).
+        end_date (str, opcional): Fecha de fin del filtro (formato YYYY-MM-DD).
 
     Returns:
         JSONResponse: Un objeto JSON con la distribución de calidad por etapas para el video especificado.
     """
     df = get_google_sheets_data(client_name)
+
+    # Aplicar el filtro de fechas al DataFrame si se proporcionan
+    if start_date or end_date:
+        df = filter_by_date(df, start_date, end_date)
+
+    # Realizar el análisis de calidad con el DataFrame filtrado
     analysis_df = analyze_quality_distribution(df, nomenclatura)
 
     # Convertir el DataFrame en una lista de diccionarios
