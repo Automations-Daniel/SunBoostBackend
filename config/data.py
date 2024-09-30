@@ -92,14 +92,14 @@ def load_video_links():
 
 def preprocess_data(df):
     """
-    Normalizes UTM Content, Stage, extracts Video ID and Leyenda from the UTM Content, 
+    Normalizes UTM Content, Stage, extracts Video ID and Leyenda from the UTM Content,
     and adds video links from the loaded data.
 
     Args:
         df (pd.DataFrame): A pandas DataFrame with UTM Content and Stage data.
 
     Returns:
-        pd.DataFrame: A DataFrame with normalized UTM Content, extracted Video ID, 
+        pd.DataFrame: A DataFrame with normalized UTM Content, extracted Video ID,
                       Leyenda, and the corresponding video links.
     """
     df = df.copy()
@@ -292,13 +292,16 @@ def analyze_quality_distribution(df, video_id):
     return leads_by_stage
 
 
-def analyze_general_video_performance():
+def analyze_general_video_performance(start_date=None, end_date=None):
     """
-    Analyzes general video performance across all clients, returning the total leads, appointments, and closures for each video.
+    Analiza el rendimiento general de los videos de todos los clientes con un filtro opcional por rango de fechas.
+
+    Args:
+        start_date (str, opcional): Fecha de inicio en formato YYYY-MM-DD.
+        end_date (str, opcional): Fecha de fin en formato YYYY-MM-DD.
 
     Returns:
-        pd.DataFrame: A DataFrame containing video IDs, corresponding leads, appointments, closures, and links, 
-                      sorted by total leads in descending order.
+        pd.DataFrame: DataFrame con los resultados del análisis.
     """
     clients = get_sheet_names()
     final_df = pd.DataFrame()
@@ -306,9 +309,13 @@ def analyze_general_video_performance():
     for client in clients:
         df = get_google_sheets_data(client)
         if not df.empty:
+            # Aplicar el filtro de fechas
+            df = filter_by_date(df, start_date, end_date)
+
             # Analizar los cierres y citas
             closed_df = analyze_closed_data(df)
             appointments_df = analyze_appointments_data(df)
+
             # Unir los leads, cierres y citas en un solo DataFrame por cliente
             combined_df = pd.merge(
                 appointments_df,
@@ -334,3 +341,42 @@ def analyze_general_video_performance():
     sorted_df = grouped_df.sort_values(by="Leads_Totales", ascending=False)
 
     return sorted_df
+
+
+def filter_by_date(df, start_date=None, end_date=None):
+    """
+    Filtra el DataFrame por un rango de fechas opcional.
+
+    Args:
+        df (pd.DataFrame): DataFrame que contiene una columna de fecha 'Created at (fecha)'.
+        start_date (str, opcional): Fecha de inicio del filtro. Formato YYYY-MM-DD.
+        end_date (str, opcional): Fecha de fin del filtro. Formato YYYY-MM-DD.
+
+    Returns:
+        pd.DataFrame: DataFrame filtrado por el rango de fechas.
+    """
+    # Convertir la columna 'Created at (fecha)' a formato datetime
+    df["Created at (fecha)"] = pd.to_datetime(df["Created at (fecha)"], errors="coerce")
+
+    # Convertir start_date y end_date a datetime si se proporcionan
+    start_date = pd.to_datetime(start_date) if start_date else None
+    end_date = pd.to_datetime(end_date) if end_date else None
+
+    # Si solo se proporciona start_date, filtrar solo por ese día
+    if start_date and not end_date:
+        df = df.loc[df["Created at (fecha)"] == start_date]
+
+    # Si solo se proporciona end_date, filtrar solo por ese día
+    elif end_date and not start_date:
+        df = df.loc[df["Created at (fecha)"] == end_date]
+
+    # Si ambas fechas están, intercambiar si start_date > end_date
+    elif start_date and end_date:
+        if start_date > end_date:
+            start_date, end_date = end_date, start_date
+        df = df.loc[
+            (df["Created at (fecha)"] >= start_date)
+            & (df["Created at (fecha)"] <= end_date)
+        ]
+
+    return df
