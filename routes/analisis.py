@@ -59,7 +59,9 @@ def analyze_quality(client_name: str, nomenclatura: str):
 
 @router.get("/general/video-performance")
 def general_video_performance(start_date: str = None, end_date: str = None):
-    analysis_df = analyze_general_video_performance(start_date, end_date)  # Pasar las fechas a la función
+    analysis_df = analyze_general_video_performance(
+        start_date, end_date
+    )  # Pasar las fechas a la función
 
     # Convertir el DataFrame en una lista de diccionarios
     result = analysis_df.to_dict(orient="records")

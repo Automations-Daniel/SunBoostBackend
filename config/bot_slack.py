@@ -11,15 +11,15 @@ client = slack.WebClient(token=getenv("SLACK_TOKEN"))
 
 def send_slack_notifications(channels_data: ChannelList, message: str):
     """
-    Send a message to multiple Slack channels.
+    Envía un mensaje a múltiples canales de Slack.
 
     Args:
-        channels_data (ChannelList): A list of Slack channel identifiers.
-        message (str): The message to send to the Slack channels.
+        channels_data (ChannelList): Una lista de identificadores de canales de Slack.
+        message (str): El mensaje que se enviará a los canales de Slack.
 
     Returns:
-        list: A list of SlackResponseAlerts, each containing the channel, message, 
-              and whether the message was successfully sent.
+        list: Una lista de SlackResponseAlerts, cada uno conteniendo el canal, mensaje,
+              y si el mensaje fue enviado exitosamente.
     """
     responses = []
     for channel in channels_data:

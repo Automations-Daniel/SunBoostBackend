@@ -14,14 +14,14 @@ SPREADSHEET_ID = "1edfM96ge_NasWsH16WpGihBeCj0g-Rj2T6zmxZMycp4"
 
 def get_google_sheets_data(range_name: str):
     """
-    Fetches data from a specific range in a Google Sheets spreadsheet.
+    Obtiene datos de un rango específico en una hoja de cálculo de Google Sheets.
 
     Args:
-        range_name (str): The range within the Google Sheets to retrieve data from.
+        range_name (str): El rango dentro de Google Sheets del cual se van a recuperar los datos.
 
     Returns:
-        pd.DataFrame: A pandas DataFrame containing the data from the specified range.
-                      Returns an empty DataFrame if no data is found.
+        pd.DataFrame: Un DataFrame de pandas que contiene los datos del rango especificado.
+                      Retorna un DataFrame vacío si no se encuentran datos.
     """
     creds = service_account.Credentials.from_service_account_file(KEY, scopes=SCOPES)
     service = build("sheets", "v4", credentials=creds)
@@ -42,10 +42,10 @@ def get_google_sheets_data(range_name: str):
 
 def get_sheet_names():
     """
-    Retrieves the names of all visible sheets (tabs) within a Google Sheets document.
+    Recupera los nombres de todas las hojas (pestañas) visibles dentro de un documento de Google Sheets.
 
     Returns:
-        list: A list of strings, each representing a visible sheet name (typically clients).
+        list: Una lista de cadenas, cada una representando el nombre de una hoja visible (típicamente clientes).
     """
     creds = service_account.Credentials.from_service_account_file(KEY, scopes=SCOPES)
     service = build("sheets", "v4", credentials=creds)
@@ -63,10 +63,10 @@ def get_sheet_names():
 
 def load_video_links():
     """
-    Loads video links from CSV files located in the 'dataLinksVideos' folder.
+    Carga enlaces de video desde archivos CSV ubicados en la carpeta 'dataLinksVideos'.
 
     Returns:
-        dict: A dictionary where the keys are video IDs and the values are the corresponding video links.
+        dict: Un diccionario donde las claves son los IDs de video y los valores son los enlaces correspondientes.
     """
     folder_path = "dataLinksVideos"  # Asegúrate de que esta ruta es correcta
     video_links = {}
@@ -92,15 +92,15 @@ def load_video_links():
 
 def preprocess_data(df):
     """
-    Normalizes UTM Content, Stage, extracts Video ID and Leyenda from the UTM Content,
-    and adds video links from the loaded data.
+    Normaliza el contenido UTM, la etapa, extrae el ID del video y la leyenda del contenido UTM,
+    y agrega enlaces de video a partir de los datos cargados.
 
     Args:
-        df (pd.DataFrame): A pandas DataFrame with UTM Content and Stage data.
+        df (pd.DataFrame): Un DataFrame de pandas con el contenido UTM y los datos de etapa.
 
     Returns:
-        pd.DataFrame: A DataFrame with normalized UTM Content, extracted Video ID,
-                      Leyenda, and the corresponding video links.
+        pd.DataFrame: Un DataFrame con el contenido UTM normalizado, el ID del video extraído,
+                      la leyenda y los enlaces de video correspondientes.
     """
     df = df.copy()
 
@@ -151,14 +151,14 @@ def preprocess_data(df):
 
 def analyze_closed_data(df, stages_to_analyze=["CLOSED", "INSTALLED"]):
     """
-    Analyzes closure data, counting leads and closures based on the specified stages.
+    Analiza los datos de cierres, contando los leads y cierres basados en las etapas especificadas.
 
     Args:
-        df (pd.DataFrame): A DataFrame containing UTM Content and Stage data.
-        stages_to_analyze (list): A list of stages to analyze for closures (default is ["CLOSED", "INSTALLED"]).
+        df (pd.DataFrame): Un DataFrame que contiene el contenido UTM y datos de etapa.
+        stages_to_analyze (list): Una lista de etapas a analizar para los cierres (por defecto ["CLOSED", "INSTALLED"]).
 
     Returns:
-        pd.DataFrame: A DataFrame containing leads, closures, and calculated closure rates and ratios.
+        pd.DataFrame: Un DataFrame que contiene leads, cierres y las tasas de cierre calculadas.
     """
     df = preprocess_data(df)
     df = df.copy()
@@ -214,14 +214,14 @@ def analyze_appointments_data(
     ],
 ):
     """
-    Analyzes appointment data, counting leads and appointments based on the specified stages.
+    Analiza los datos de citas, contando leads y citas basadas en las etapas especificadas.
 
     Args:
-        df (pd.DataFrame): A DataFrame containing UTM Content and Stage data.
-        stages_to_analyze (list): A list of stages to analyze for appointments (default is a variety of stages).
+        df (pd.DataFrame): Un DataFrame que contiene el contenido UTM y los datos de etapa.
+        stages_to_analyze (list): Una lista de etapas a analizar para las citas (por defecto incluye varias etapas).
 
     Returns:
-        pd.DataFrame: A DataFrame containing leads, appointments, and calculated appointment rates and ratios.
+        pd.DataFrame: Un DataFrame que contiene leads, citas y las tasas de citas calculadas.
     """
     df = preprocess_data(df)
     df = df.copy()
@@ -262,14 +262,14 @@ def analyze_appointments_data(
 
 def analyze_quality_distribution(df, video_id):
     """
-    Analyzes the quality distribution by Stage for a specific video.
+    Analiza la distribución de calidad por etapa para un video específico.
 
     Args:
-        df (pd.DataFrame): A DataFrame containing UTM Content, Stage, and Video ID data.
-        video_id (str): The specific Video ID to analyze.
+        df (pd.DataFrame): Un DataFrame que contiene el contenido UTM, la etapa y el ID del video.
+        video_id (str): El ID del video específico a analizar.
 
     Returns:
-        pd.DataFrame: A DataFrame showing the number of leads per stage and their percentage for the specified video.
+        pd.DataFrame: Un DataFrame que muestra el número de leads por etapa y su porcentaje para el video especificado.
     """
     df = preprocess_data(df)
 
