@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 
-#Entrada y salida para funciones y endpoints
+#Modelos Pydantic para entrada y salida de funciones y endpoints
 class ChannelList(BaseModel):
     channels: list[str]
 

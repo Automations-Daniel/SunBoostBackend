@@ -14,6 +14,9 @@ def send_daily_appointments_alert():
     """
     Envía un resumen diario de las citas a Slack, solo si hay citas relevantes.
     Si no hubo leads analizables para ningún cliente, envía una alerta.
+
+    Returns:
+        None: Esta función no retorna valores, solo envía notificaciones a Slack.
     """
     # Usar la fecha del día anterior
     date = (datetime.now() - timedelta(days=1)).replace(
@@ -78,6 +81,9 @@ def send_daily_closed_alert():
     """
     Envía un resumen diario de los cierres a Slack, solo si hay cierres relevantes.
     Si no hubo leads analizables para ningún cliente, envía una alerta.
+
+    Returns:
+        None: Esta función no retorna valores, solo envía notificaciones a Slack.
     """
     # Usar la fecha del día anterior
     date = (datetime.now() - timedelta(days=1)).replace(
@@ -144,6 +150,9 @@ def send_weekly_appointments_alert():
     """
     Envía un resumen semanal de las citas a Slack, solo si hay citas relevantes.
     Si no hubo leads analizables para ningún cliente, envía una alerta.
+
+    Returns:
+        None: Esta función no retorna valores, solo envía notificaciones a Slack.
     """
     end_date = datetime.now() - timedelta(days=1)
     start_date = end_date - timedelta(days=6)
@@ -201,6 +210,9 @@ def send_weekly_closed_alert():
     """
     Envía un resumen semanal de los cierres a Slack, solo si hay cierres relevantes.
     Si no hubo leads analizables para ningún cliente, envía una alerta.
+
+    Returns:
+        None: Esta función no retorna valores, solo envía notificaciones a Slack.
     """
     end_date = datetime.now() - timedelta(days=1)
     start_date = end_date - timedelta(days=6)
@@ -265,6 +277,9 @@ def send_monthly_appointments_alert():
     """
     Envía un resumen mensual de las citas a Slack, solo si hay citas relevantes.
     Si no hubo leads analizables para ningún cliente, envía una alerta.
+
+    Returns:
+        None: Esta función no retorna valores, solo envía notificaciones a Slack.
     """
     now = datetime.now()
     start_date = (now.replace(day=1) - timedelta(days=1)).replace(
@@ -323,6 +338,9 @@ def send_monthly_closed_alert():
     """
     Envía un resumen mensual de los cierres a Slack, solo si hay cierres relevantes.
     Si no hubo leads analizables para ningún cliente, envía una alerta.
+
+    Returns:
+        None: Esta función no retorna valores, solo envía notificaciones a Slack.
     """
     now = datetime.now()
     start_date = (now.replace(day=1) - timedelta(days=1)).replace(
