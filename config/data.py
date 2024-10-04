@@ -260,36 +260,55 @@ def analyze_appointments_data(
     return analysis_df
 
 
-def analyze_quality_distribution(df, video_id):
+def analyze_quality_distribution(df):
     """
-    Analiza la distribución de calidad por etapa para un video específico.
+    Analiza la distribución de calidad por etapa para todos los videos de un cliente.
 
     Args:
         df (pd.DataFrame): Un DataFrame que contiene el contenido UTM, la etapa y el ID del video.
-        video_id (str): El ID del video específico a analizar.
 
     Returns:
-        pd.DataFrame: Un DataFrame que muestra el número de leads por etapa y su porcentaje para el video especificado.
+        pd.DataFrame: Un DataFrame que muestra la distribución de calidad para cada Video ID,
+                      con todas las etapas posibles y sus respectivos valores en el formato "Numero de Leads, Porcentaje".
     """
     df = preprocess_data(df)
 
-    # Filtrar filas donde 'Video ID' coincide con la nomenclatura proporcionada
-    filtered_df = df[df["Video ID"] == video_id]
-
-    # Contar el número de leads por Stage
+    # Contar el número de leads por Video ID y Stage
     leads_by_stage = (
-        filtered_df.groupby("Stage").size().reset_index(name="Numero de Leads")
+        df.groupby(["Video ID", "Stage"]).size().reset_index(name="Numero de Leads")
     )
 
-    # Calcular el porcentaje de leads por Stage
-    total_leads = leads_by_stage["Numero de Leads"].sum()
+    # Calcular el porcentaje de leads por Stage dentro de cada Video ID
+    total_leads_by_video = (
+        leads_by_stage.groupby("Video ID")["Numero de Leads"]
+        .sum()
+        .reset_index(name="Total Leads")
+    )
+    leads_by_stage = pd.merge(
+        leads_by_stage, total_leads_by_video, on="Video ID", how="left"
+    )
     leads_by_stage["Porcentaje"] = (
-        leads_by_stage["Numero de Leads"] / total_leads
+        leads_by_stage["Numero de Leads"] / leads_by_stage["Total Leads"]
     ) * 100
 
-    leads_by_stage = leads_by_stage.sort_values(by="Porcentaje", ascending=False)
+    # Crear una columna combinada con el formato "Numero de Leads, Porcentaje"
+    leads_by_stage["Leads y Porcentaje"] = leads_by_stage.apply(
+        lambda row: f"{row['Numero de Leads']} - {round(row['Porcentaje'], 2)}%", axis=1
+    )
 
-    return leads_by_stage
+    # Pivotar la tabla para mostrar los stages como columnas con "Leads y Porcentaje"
+    pivot_df = leads_by_stage.pivot_table(
+        index="Video ID",
+        columns="Stage",
+        values="Leads y Porcentaje",
+        aggfunc="first",  # Usar "first" para que mantenga la primera ocurrencia de texto en lugar de realizar agregaciones
+        fill_value="",
+    )
+
+    # Reiniciar el índice para que "Video ID" vuelva a ser una columna normal
+    pivot_df = pivot_df.reset_index()
+
+    return pivot_df
 
 
 def analyze_general_video_performance(start_date=None, end_date=None):
