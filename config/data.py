@@ -91,13 +91,14 @@ def load_video_links():
     return video_links
 
 
-def preprocess_data(df):
+def preprocess_data(df, video_links=None):
     """
     Normaliza el contenido UTM, la etapa, extrae el ID del video y la leyenda del contenido UTM,
     y agrega enlaces de video a partir de los datos cargados.
 
     Args:
         df (pd.DataFrame): Un DataFrame de pandas con el contenido UTM y los datos de etapa.
+        video_links (dict, opcional): Un diccionario de enlaces de video con el 'ID' como clave y el 'Link' como valor.
 
     Returns:
         pd.DataFrame: Un DataFrame con el contenido UTM normalizado, el ID del video extraído,
@@ -136,11 +137,15 @@ def preprocess_data(df):
         )
     )
 
-    # Cargar los links
-    video_links = get_notion_data()
-
-    # Convertir la lista de diccionarios en un diccionario con el 'ID' como clave y el 'Link' como valor
-    video_links_dict = {item['ID']: item['Link'] for item in video_links if item['ID']}
+    # Cargar los links si no se pasan como argumento
+    if video_links is None:
+        video_links = get_notion_data()
+        # Convertir la lista de diccionarios en un diccionario con el 'ID' como clave y el 'Link' como valor
+        video_links_dict = {
+            item["ID"]: item["Link"] for item in video_links if item["ID"]
+        }
+    else:
+        video_links_dict = video_links
 
     # Asignar links basados en el Video ID
     df["Link"] = df["Video ID"].map(video_links_dict)
@@ -151,18 +156,21 @@ def preprocess_data(df):
     return df
 
 
-def analyze_closed_data(df, stages_to_analyze=["CLOSED", "INSTALLED"]):
+def analyze_closed_data(
+    df, video_links=None, stages_to_analyze=["CLOSED", "INSTALLED"]
+):
     """
     Analiza los datos de cierres, contando los leads y cierres basados en las etapas especificadas.
 
     Args:
         df (pd.DataFrame): Un DataFrame que contiene el contenido UTM y datos de etapa.
+        video_links (dict, opcional): Un diccionario de enlaces de video con el 'ID' como clave y el 'Link' como valor.
         stages_to_analyze (list): Una lista de etapas a analizar para los cierres (por defecto ["CLOSED", "INSTALLED"]).
 
     Returns:
         pd.DataFrame: Un DataFrame que contiene leads, cierres y las tasas de cierre calculadas.
     """
-    df = preprocess_data(df)
+    df = preprocess_data(df, video_links)
     df = df.copy()
 
     # Contar los leads
@@ -205,6 +213,7 @@ def analyze_closed_data(df, stages_to_analyze=["CLOSED", "INSTALLED"]):
 
 def analyze_appointments_data(
     df,
+    video_links=None,
     stages_to_analyze=[
         "CLOSED",
         "INSTALLED",
@@ -220,12 +229,13 @@ def analyze_appointments_data(
 
     Args:
         df (pd.DataFrame): Un DataFrame que contiene el contenido UTM y los datos de etapa.
+        video_links (dict, opcional): Un diccionario de enlaces de video con el 'ID' como clave y el 'Link' como valor.
         stages_to_analyze (list): Una lista de etapas a analizar para las citas (por defecto incluye varias etapas).
 
     Returns:
         pd.DataFrame: Un DataFrame que contiene leads, citas y las tasas de citas calculadas.
     """
-    df = preprocess_data(df)
+    df = preprocess_data(df, video_links)
     df = df.copy()
 
     # Contar los leads
@@ -327,15 +337,19 @@ def analyze_general_video_performance(start_date=None, end_date=None):
     clients = get_sheet_names()
     final_df = pd.DataFrame()
 
+    # Cargar los enlaces de video solo una vez
+    video_links = get_notion_data()
+    video_links_dict = {item["ID"]: item["Link"] for item in video_links if item["ID"]}
+
     for client in clients:
         df = get_google_sheets_data(client)
         if not df.empty:
             # Aplicar el filtro de fechas
             df = filter_by_date(df, start_date, end_date)
 
-            # Analizar los cierres y citas
-            closed_df = analyze_closed_data(df)
-            appointments_df = analyze_appointments_data(df)
+            # Analizar los cierres y citas, pasando los links
+            closed_df = analyze_closed_data(df, video_links_dict)
+            appointments_df = analyze_appointments_data(df, video_links_dict)
 
             # Unir los leads, cierres y citas en un solo DataFrame por cliente
             combined_df = pd.merge(
