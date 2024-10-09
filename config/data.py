@@ -5,6 +5,7 @@ import pandas as pd
 import numpy as np
 import re
 import os
+from config.data_notion import get_notion_data
 
 SCOPES = ["https://www.googleapis.com/auth/spreadsheets"]
 KEY = "key.json"
@@ -136,15 +137,16 @@ def preprocess_data(df):
     )
 
     # Cargar los links
-    video_links = load_video_links()
+    video_links = get_notion_data()
+
+    # Convertir la lista de diccionarios en un diccionario con el 'ID' como clave y el 'Link' como valor
+    video_links_dict = {item['ID']: item['Link'] for item in video_links if item['ID']}
 
     # Asignar links basados en el Video ID
-    df["Link"] = df["Video ID"].map(video_links)
+    df["Link"] = df["Video ID"].map(video_links_dict)
 
     # Reemplazar NaN o valores nulos en los links con "Sin enlace"
-    df["Link"] = df["Link"].fillna(
-        "Sin enlace"
-    )  # Usar fillna para reemplazar nulos directamente
+    df["Link"] = df["Link"].fillna("Sin enlace")
 
     return df
 
